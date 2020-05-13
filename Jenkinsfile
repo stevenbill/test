@@ -14,7 +14,7 @@ pipeline {
         stage('Nexus Push'){
             steps{
                 withCredentials([string(credentialsId: 'docker-hub', variable: 'nexusPwd')]) {
-                    sh "docker login -u yousry943 -p ${nexusPwd} ${NEXUS_URL}"
+                    sh "docker login -u yousry943 -p ${nexusPwd} yousry943/erb"
                     sh "docker push ${IMAGE_URL_WITH_TAG}"
                 }
             }
