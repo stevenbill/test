@@ -1,29 +1,36 @@
 pipeline {
-    agent any
-    environment{
-        DOCKER_TAG = getDockerTag()
-        NEXUS_URL  = "127.0.0.1:8080"
-        IMAGE_URL_WITH_TAG = "${NEXUS_URL}/node-app:${DOCKER_TAG}"
+  environment {
+    registry = "yousry943/erb"
+    registryCredential = 'dockerhub'
+    dockerImage = ''
+  }
+  agent any
+  stages {
+    stage('Cloning Git') {
+      steps {
+        git 'https://github.com/gustavoapolinario/microservices-node-example-todo-frontend.git'
+      }
     }
-    stages{
-        stage('Build Docker Image'){
-            steps{
-                sh "docker build . -t ${IMAGE_URL_WITH_TAG}"
-            }
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
         }
-        stage('docker  Push'){
-            steps{
-                withCredentials([string(credentialsId: 'docker-hub', variable: 'dockerHubPwd')]) {
-                    sh " docker login -u yousry943 -p ${dockerHubPwd} "
-                }
-                sh " docker push yousry943/erb:${IMAGE_URL_WITH_TAG}"
-            }
-        }
-
+      }
     }
-}
-
-def getDockerTag(){
-    def tag  = sh script: 'git rev-parse HEAD', returnStdout: true
-    return tag
+    stage('Deploy Image') {
+      steps{
+        script {
+          docker.withRegistry( '', registryCredential ) {
+            dockerImage.push()
+          }
+        }
+      }
+    }
+    stage('Remove Unused docker image') {
+      steps{
+        sh "docker rmi $registry:$BUILD_NUMBER"
+      }
+    }
+  }
 }
