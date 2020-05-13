@@ -2,44 +2,40 @@ pipeline {
     agent any
     environment{
         DOCKER_TAG = getDockerTag()
+        NEXUS_URL  = "127.0.0.1:8080"
+        IMAGE_URL_WITH_TAG = "${NEXUS_URL}/node-app:${DOCKER_TAG}"
     }
     stages{
-       stage('build docker  image'){
-          steps{
-            sh "docker build . -t yousry943/erb:${DOCKER_TAG}"
-          }
-       }
-       stage('Docker hub  push '){
-          steps{
-            withCredentials([string(CredentialsId: 'docker-hub', variable:'dockerhubpwd')]){
-            sh "docker login -u yousry943 -p ${dockerhubpwd}"
-            sh "docker push yousry943/erb:${DOCKER_TAG}"
-
+        stage('Build Docker Image'){
+            steps{
+                sh "docker build . -t ${IMAGE_URL_WITH_TAG}"
             }
-          }
-       }
-       stage('Deploy  to  k8s'){
-       steps{
-       sh "chmod +x changeTag.sh"
-       sh "./changeTag.sh ${DOCKER_TAG}"
-       sshagent(['kops-machine']) {
-sh"scp -o StrictHostKeyChecking=no services.yml node-app-pod.yml yousry@127.0.0.1:/home/yousry"
-
-          script{
-            try{
-            sh "ssh yousry@127.0.0.1 kubectl apply -f ."
-            }catch(error){
-            sh "ssh yousry@127.0.0.1 kubectl create -f ."
-
+        }
+        stage('Nexus Push'){
+            steps{
+                withCredentials([string(credentialsId: 'docker-hub', variable: 'nexusPwd')]) {
+                    sh "docker login -u yousry943 -p ${nexusPwd} ${NEXUS_URL}"
+                    sh "docker push ${IMAGE_URL_WITH_TAG}"
+                }
             }
-          }
+        }
+        stage('Docker Deploy Dev'){
+            steps{
+                  sshagent(['kops-machine']) {
+                    withCredentials([string(credentialsId: 'docker-hub', variable: 'nexusPwd')]) {
+                        sh "ssh yousry@127.0.0.1 docker login -u admin -p ${nexusPwd} ${NEXUS_URL}"
+                    }
+					// Remove existing container, if container name does not exists still proceed with the build
+					sh script: "ssh yousry@127.0.0.1 docker rm -f nodeapp",  returnStatus: true
+
+                    sh "ssh yousry@127.0.0.1 docker run -d -p 8080:8080 --name nodeapp ${IMAGE_URL_WITH_TAG}"
+                }
             }
-       }
-
-       }
-
-
-
+        }
     }
+}
 
+def getDockerTag(){
+    def tag  = sh script: 'git rev-parse HEAD', returnStdout: true
+    return tag
 }
