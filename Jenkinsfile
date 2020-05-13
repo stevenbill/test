@@ -11,11 +11,11 @@ pipeline {
                 sh "docker build . -t ${IMAGE_URL_WITH_TAG}"
             }
         }
-        stage('Nexus Push'){
+        stage('docker  Push'){
             steps{
                 withCredentials([string(credentialsId: 'docker-hub', variable: 'nexusPwd')]) {
-                    sh "docker login -u yousry943 -p ${nexusPwd} yousry943/erb"
-                    sh "docker push ${IMAGE_URL_WITH_TAG}"
+                    sh "docker login -u yousry943 -p ${nexusPwd} "
+                    sh "docker push yousry943/erb:${IMAGE_URL_WITH_TAG}"
                 }
             }
         }
