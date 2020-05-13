@@ -13,10 +13,10 @@ pipeline {
         }
         stage('docker  Push'){
             steps{
-                withCredentials([string(credentialsId: 'docker-hub', variable: 'nexusPwd')]) {
-                    sh "sudo docker login -u yousry943 -p ${nexusPwd} "
-                    sh "sudo docker push yousry943/erb:${IMAGE_URL_WITH_TAG}"
+                withCredentials([string(credentialsId: 'docker-pwd', variable: 'docker-hub')]) {
+                    sh "sudo docker login -u yousry943 -p ${docker-hub} "
                 }
+                sh "sudo docker push yousry943/erb:${IMAGE_URL_WITH_TAG}"
             }
         }
         stage('Docker Deploy Dev'){
