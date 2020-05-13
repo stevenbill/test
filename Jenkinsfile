@@ -13,13 +13,13 @@ pipeline {
         }
         stage('docker  Push'){
             steps{
-                withCredentials([string(credentialsId: 'docker-pwd', variable: 'docker-hub')]) {
-                    sh "sudo docker login -u yousry943 -p ${docker-hub} "
+                withCredentials([string(credentialsId: 'docker-pwd2', variable: 'dockerHubPwd')]) {
+                    sh "sudo docker login -u yousry943 -p ${dockerHubPwd} "
                 }
-                sh "sudo docker push yousry943/erb:0.1"
+                sh "sudo docker push yousry943/erb:${IMAGE_URL_WITH_TAG}"
             }
         }
-  
+
     }
 }
 
