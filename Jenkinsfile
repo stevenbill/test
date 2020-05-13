@@ -14,8 +14,8 @@ pipeline {
         stage('docker  Push'){
             steps{
                 withCredentials([string(credentialsId: 'docker-hub', variable: 'nexusPwd')]) {
-                    sh "docker login -u yousry943  "
-                    sh "docker push yousry943/erb:${IMAGE_URL_WITH_TAG}"
+                    sh "docker login -u yousry943 -p ${nexusPwd} "
+              
                 }
             }
         }
@@ -23,7 +23,7 @@ pipeline {
             steps{
                   sshagent(['kops-machine']) {
                     withCredentials([string(credentialsId: 'docker-hub', variable: 'nexusPwd')]) {
-                        sh "ssh yousry@127.0.0.1 docker login -u admin -p ${nexusPwd} ${NEXUS_URL}"
+                        sh "ssh yousry@127.0.0.1 docker login -u yousry -p ${nexusPwd} ${NEXUS_URL}"
                     }
 					// Remove existing container, if container name does not exists still proceed with the build
 					sh script: "ssh yousry@127.0.0.1 docker rm -f nodeapp",  returnStatus: true
