@@ -19,19 +19,7 @@ pipeline {
                 sh "sudo docker push yousry943/erb:0.1"
             }
         }
-        stage('Docker Deploy Dev'){
-            steps{
-                  sshagent(['kops-machine']) {
-                    withCredentials([string(credentialsId: 'docker-hub', variable: 'nexusPwd')]) {
-                        sh "ssh yousry@127.0.0.1 docker login -u yousry -p ${nexusPwd} ${NEXUS_URL}"
-                    }
-					// Remove existing container, if container name does not exists still proceed with the build
-					sh script: "ssh yousry@127.0.0.1 docker rm -f nodeapp",  returnStatus: true
-
-                    sh "ssh yousry@127.0.0.1 docker run -d -p 8080:8080 --name nodeapp ${IMAGE_URL_WITH_TAG}"
-                }
-            }
-        }
+  
     }
 }
 
