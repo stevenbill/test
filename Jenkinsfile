@@ -30,12 +30,13 @@ steps{
 sh "chmod +x changeTag.sh"
 sh "./changeTag.sh $BUILD_NUMBER"
 sshagent(['kops-machine']) {
+sh "ssh -o StrictHostKeyChecking=no  servicesyml node-app-pod.yml yousry@127.0.0.1/home/yousry"
   script{
   try{
-  sh "ssh yousry@127.0.0.1  pwd "
+  sh "ssh yousry@127.0.0.1 kubectl apply -f . "
 
   }catch(error){
-  sh "ssh yousry@127.0.0.1 pwd "
+  sh "ssh yousry@127.0.0.1 kubectl create -f . "
   }
   }
 }
