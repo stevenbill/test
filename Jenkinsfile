@@ -14,7 +14,7 @@ dockerImage = docker.build registry + ":$BUILD_NUMBER"
 }
 }
 }
-stage('Deploy our image') {
+stage('Push our image') {
 steps{
 script {
 docker.withRegistry( '', registryCredential ) {
@@ -23,6 +23,26 @@ dockerImage.push()
 }
 }
 }
+
+stage('Deploy to k8s') {
+steps{
+
+sh "chmod +x changeTag.sh"
+sh "./changeTag.sh $BUILD_NUMBER"
+sshagent(['kops-machine']) {
+  script{
+  try{
+  sh "ssh yousry@127.0.0.1 kubectl apply -f . "
+
+  }catch(error){
+  sh "ssh yousry@127.0.0.1 kubectl create -f . "
+  }
+  }
+}
+}
+}
+
+
 stage('Cleaning up') {
 steps{
 sh "docker rmi $registry:$BUILD_NUMBER"
