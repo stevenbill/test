@@ -33,7 +33,7 @@ sshagent(['kops-machine']) {
 sh "scp  -o StrictHostKeyChecking=no  services.yml pods.yml "
 sh "pwd "
 script {
-  kubernetesDeploy(configs: "pods.yaml", kubeconfigId: "kubeconfig")
+  kubernetesDeploy(configs: "pods.yml", kubeconfigId: "kubeconfig")
 }
 }
 }
