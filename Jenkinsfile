@@ -32,7 +32,13 @@ sh "./changeTag.sh $BUILD_NUMBER"
 sshagent(['kops-machine']) {
 sh "scp  -o StrictHostKeyChecking=no  services.yml pods.yml "
 sh "pwd "
-sh "ssh yousry@127.0.0.1 pwd "
+script{
+try{
+sh"kubectl apply -f . "
+}catch(error){
+sh"kubectl create -f . "
+}
+}
 }
 }
 }
