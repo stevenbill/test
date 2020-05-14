@@ -34,6 +34,7 @@ sshagent(['kops-machine']) {
 
   sh "ssh yousry@127.0.0.1 pwd "
 
+  }
 }
 }
 }
