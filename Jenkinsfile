@@ -2,6 +2,8 @@ pipeline {
 environment {
 registry = "yousry943/erb"
 registryCredential = 'dockerhub_id'
+SshUser = 'ssh-user'
+
 dockerImage = ''
 }
 agent any
@@ -29,8 +31,17 @@ stage('Docker Deploy Dev'){
     steps{
         sshagent(['kops-machine']) {
 
+            script {
+            docker.withRegistry( '', SshUser ) {
+            
+            sh "ssh yousry@127.0.0.1 docker run -d -p 8080:8080 --name nodeapp $BUILD_NUMBER"
+
+            }
+            }
+  // Remove existing container, if container name does not exists still proceed with the build
   sh script: "ssh yousry@127.0.0.1 docker rm -f nodeapp",  returnStatus: true
-  sh "ssh yousry@127.0.0.1 docker run -d -p 8080:8080 --name nodeapp $BUILD_NUMBER"
+
+            sh "ssh yousry@127.0.0.1 docker run -d -p 8080:8080 --name nodeapp $BUILD_NUMBER"
         }
     }
 }
