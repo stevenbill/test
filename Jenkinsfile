@@ -30,7 +30,7 @@ steps{
 sh "chmod +x changeTag.sh"
 sh "./changeTag.sh $BUILD_NUMBER"
 sshagent(['kops-machine']) {
-sh "  -o StrictHostKeyChecking=no  yousry@127.0.0.1 pwd"
+sh "scp  -o StrictHostKeyChecking=no  services.yml pods.yml yousry@127.0.0.1/home/yousry"
   script{
   try{
   sh "ssh yousry@127.0.0.1 pwd "
