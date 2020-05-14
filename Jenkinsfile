@@ -40,15 +40,6 @@ script {
 }
 
 
-
-stage('Deploy App') {
-      steps {
-        script {
-          kubernetesDeploy(configs: "php-apache.yaml", kubeconfigId: "kubeconfig")
-        }
-      }
-    }
-
 stage('Cleaning up') {
 steps{
 sh "docker rmi $registry:$BUILD_NUMBER"
