@@ -33,13 +33,18 @@ sh "./changeTag.sh $BUILD_NUMBER"
 script {
   sh "scp  -o StrictHostKeyChecking=no  services.yml pods.yml "
   sh "pwd "
-  kubernetesDeploy(configs: "pods.yml", kubeconfigId: "kubeconfig")
+  kubernetesDeploy(configs: "node-app-pod.yml", kubeconfigId: "kubeconfig")
 }
 
 }
 }
 
 
+stage('Cleaning up') {
+steps{
+sh "docker rmi $registry:$BUILD_NUMBER"
+}
+}
 
 }
 }
