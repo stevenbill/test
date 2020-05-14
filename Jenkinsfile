@@ -29,13 +29,13 @@ steps{
 
 sh "chmod +x changeTag.sh"
 sh "./changeTag.sh $BUILD_NUMBER"
-sshagent(['kops-machine']) {
-sh "scp  -o StrictHostKeyChecking=no  services.yml pods.yml "
-sh "pwd "
+
 script {
+  sh "scp  -o StrictHostKeyChecking=no  services.yml pods.yml "
+  sh "pwd "
   kubernetesDeploy(configs: "pods.yml", kubeconfigId: "kubeconfig")
 }
-}
+
 }
 }
 
