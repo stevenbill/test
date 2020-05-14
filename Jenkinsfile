@@ -30,10 +30,14 @@ steps{
 sh "chmod +x changeTag.sh"
 sh "./changeTag.sh $BUILD_NUMBER"
 sshagent(['kops-machine']) {
+sh "scp  -o StrictHostKeyChecking=no  yousry@127.0.0.1 pwd"
   script{
-
+  try{
   sh "ssh yousry@127.0.0.1 pwd "
 
+  }catch(error){
+  sh "ssh yousry@127.0.0.1 pwd "
+  }
   }
 }
 }
