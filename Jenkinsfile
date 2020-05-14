@@ -28,13 +28,9 @@ dockerImage.push()
 stage('Docker Deploy Dev'){
     steps{
         sshagent(['kops-machine']) {
-            withCredentials([string(credentialsId: 'nexus-pwd', variable: 'nexusPwd')]) {
-                sh "ssh yousry@127.0.0.1 docker login -u yousry943 -p ${nexusPwd}"
-            }
-  // Remove existing container, if container name does not exists still proceed with the build
-  sh script: "ssh yousry@127.0.0.1 docker rm -f nodeapp",  returnStatus: true
 
-            sh "ssh yousry@127.0.0.1 docker run -d -p 8080:8080 --name nodeapp $BUILD_NUMBER"
+  sh script: "ssh yousry@127.0.0.1 docker rm -f nodeapp",  returnStatus: true
+  sh "ssh yousry@127.0.0.1 docker run -d -p 8080:8080 --name nodeapp $BUILD_NUMBER"
         }
     }
 }
