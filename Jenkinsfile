@@ -24,14 +24,27 @@ dockerImage.push()
 }
 }
 
+stage('Deploy to k8s') {
+steps{
 
+sh "chmod +x changeTag.sh"
+sh "./changeTag.sh $BUILD_NUMBER"
+sshagent(['kops-machine']) {
+sh "scp  -o StrictHostKeyChecking=no  services.yml pods.yml "
+sh "pwd "
+script {
+  kubernetesDeploy(configs: "pods.yaml", kubeconfigId: "kubeconfig")
+}
+}
+}
+}
 
 
 
 stage('Deploy App') {
       steps {
         script {
-          kubernetesDeploy(configs: "pods.yaml", kubeconfigId: "kubeconfig")
+          kubernetesDeploy(configs: "php-apache.yaml", kubeconfigId: "kubeconfig")
         }
       }
     }
