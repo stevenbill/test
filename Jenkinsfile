@@ -30,6 +30,9 @@ steps{
 sh "chmod +x changeTag.sh"
 sh "./changeTag.sh $BUILD_NUMBER"
 sshagent(['kops-machine']) {
+  script{
+
+  sh "ssh yousry@127.0.0.1 pwd "
 
 }
 }
