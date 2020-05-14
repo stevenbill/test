@@ -33,10 +33,10 @@ sshagent(['kops-machine']) {
 sh "scp -o StrictHostKeyChecking=no  services.yml node-app-pod.yml yousry@127.0.0.1/home/yousry"
   script{
   try{
-  sh "ssh yousry@127.0.0.1 kubectl apply -f . "
+  sh "ssh yousry@127.0.0.1 pwd "
 
   }catch(error){
-  sh "ssh yousry@127.0.0.1 kubectl create -f . "
+  sh "ssh yousry@127.0.0.1 pwd "
   }
   }
 }
