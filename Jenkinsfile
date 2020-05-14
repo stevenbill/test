@@ -31,14 +31,8 @@ sh "chmod +x changeTag.sh"
 sh "./changeTag.sh $BUILD_NUMBER"
 sshagent(['kops-machine']) {
 sh "scp  -o StrictHostKeyChecking=no  services.yml pods.yml "
-  script{
-  try{
-  sh "ssh yousry@127.0.0.1 pwd "
-
-  }catch(error){
-  sh "ssh yousry@127.0.0.1 pwd "
-  }
-  }
+sh "ssh  pwd "
+sh "ssh yousry@127.0.0.1 pwd "
 }
 }
 }
